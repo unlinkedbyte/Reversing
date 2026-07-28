@@ -10,6 +10,5 @@ Por el momento será un repositorio dedicado a hacer ingenieria inversa y para m
 
 * **[exercise-1-with-code](./exercise-1-with-code)** - análisis de un binario del que conservaba el código fuente en mi memoria (escribí el código hace unos días)
 
-* **exercise-2-without-code** - análisis de un binario a ciegas. Lo subiré próximamente.
-
+* **[exercise-2-without-code](https://github.com/unlinkedbyte/Reversing/blob/main/exercise-2-without-code/README.md)** - análisis de un binario a ciegas.
 
