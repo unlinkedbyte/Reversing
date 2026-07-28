@@ -584,9 +584,10 @@ mov DWORD PTR [rbp-0x4], edi
 Esta es la instrucción por la que ibamos. edi, por convención (es el mismo registro que rdi pero de 32 bits) es el registro donde se pasa el primer argumento o puntero de cualquier función (tener esto en cuenta si vais a hacer ingenieria inversa, ya que identificar este tipo de patrones os ahorrarán tiempo y conexiones mentales). Otra cosa a añadir, cuando veamos unos corchetes, lo que hacemos es desreferenciar. Copiamos edi a rbp-0x4, que debe ser argc. 
 
 Si no desreferencias -> dirección de memoria
+
 Si desreferencias -> valor que contiene esa dirección de memoria 
 
-Esta es otra tip a tener en cuenta. Que no os preocupe no saber explicar algo al detalle al principio, pero en esencia, es esto.
+Esto es otra tip a tener en cuenta. Que no os preocupe no saber explicar algo al detalle al principio, pero en esencia, es esto.
 
 La siguiente instrucción que esta en +11, hacemos practicamente lo mismo. Copiamos el valor de rsi a rbp-0x10. Esto puede generar confusión. El anterior era dword ptr, este es qword ptr. Si pensamos en el binario, pensamos perfectamente que edi va a contener argc y rsi argv.
 
@@ -672,7 +673,7 @@ Una línea interesante si no tenemos el valor de eax. Los test (creo) suelen com
 0x00000000000011b5 <+63>:	jne    0x11cd <main+87>
 ```
 
-Como ya sabemos, jne es jump if not equal. Si no es igual esa última comprobación, saltamos a main7, que contiene esta intrucción: `lea     rax, [rip+0xe71]`. Vamos a comprobar esa dirección de memoria a ver que contiene:
+Como ya sabemos, jne es jump if not equal. Si no es igual esa última comprobación, saltamos a main+87, que contiene esta intrucción: `lea     rax, [rip+0xe71]`. Vamos a comprobar esa dirección de memoria a ver que contiene:
 
 ```text
 (gdb) x/i 0x2045
