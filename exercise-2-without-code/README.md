@@ -647,7 +647,7 @@ Siendo totalmente honesto aquí estoy un poco perdido, pero esto se repite hasta
    0x0000000000001213 <+157>:	ret
 ```
 
-El `jle` sabemos que iba después del main+102, así que nos lo saltamos ahora. Luego, cuando este bucle que hemos visto termina, hacemos una comparación con el compare. Estamos viendo si el resultado de lo anterior es igual a 20. No parece tener demasiado sentido de primeras.
+El `jle` sabemos que iba después del main+102, así que nos lo saltamos ahora. Luego, cuando este bucle que hemos visto termina, hacemos una comparación con el compare. Estamos viendo si el resultado de lo anterior es igual a 20.
 
 Vemos ahora otro jne. Si no es igual, nos vamos a main+131, que es el que vamos a analizar ahora. Vemos que contiene la instrucción lea, que es load effective address. Aquí no desreferenciamos en el sentido de obtener el valor, solo se cargan direcciones de memoria pese a ver los corchetes. Ahora bien, que contiene esa dirección relativa? vemos el famoso rip (el instruction pointer), que contiene la dirección de memoria de la siguiente instrucción a ejecutar. Veamos gdb que nos muestra (lo que vemos después del hastag es el cálculo ya hecho por gdb):
 
@@ -706,4 +706,6 @@ En la siguiente instrucción podemos ver que estamos copiando rax a rdi. Puedo l
 Conclusiones: Personalmente, como he dicho al principio y ayer, poder llegar a abstraerlo todo bien y entender cómo era el código fuente sin tenerlo es complejo. Creo que hoy ha ido bien e incluso mejor que ayer que sí que lo teníamos delante, pero debo decir que también era un ejercicio muy parecido el que nos había sugerido el LLM. Supongo que esta habilidad para poder entender cómo funciona un binario sin tener el código fuente o simplemente leyendo Assembly se entrena con el tiempo. Luego, también debo añadir que a veces me cuesta seguir lo que podría contener un registro si el binario fuera más largo, y no descarto que me haya pasado en este.  
 
 
-Ahora, teniendo el código delante, ¡considero que no ha ido tan mal! no hemos sabido identificar el || del principio como OR (aunque hayamos leído las instrucciones correctamente), pero sí el bucle for! Y suma == 20 aparentemente es incorrecto, que es algo que nos tenía desconcertados jaja!
+Ahora, teniendo el código delante, ¡considero que no ha ido tan mal! no hemos sabido identificar el || del principio como OR (aunque hayamos leído las instrucciones correctamente), pero sí el bucle for! Falta mucho camino todavía, pero poco a poco. 
+
+
