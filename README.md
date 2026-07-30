@@ -10,5 +10,4 @@ Por el momento será un repositorio dedicado a hacer ingeniería inversa y para 
 
 * **[binary analysis](https://github.com/unlinkedbyte/Reversing/tree/main/binary-analysis)** - análisis de binarios, empezando por ejercicios con y sin el código fuente.
 
-* **[firmware-analysis](https://github.com/unlinkedbyte/Reversing/tree/main/firmware-analysis)** - análisis de firmware real (router TP-Link, MIPS), desde el desempaquetado con binwalk hasta el seguimiento de referencias en Ghidra.
-
+* **[firmware-analysis](https://github.com/unlinkedbyte/Reversing/tree/main/firmware-analysis)** - análisis de firmware real, desde el desempaquetado con binwalk hasta el reconocimiento del sistema de archivos.
