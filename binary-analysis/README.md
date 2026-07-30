@@ -1,0 +1,10 @@
+### Análisis de binarios 
+
+Ejercicios de reversing sobre binarios. Primeros pasos.
+
+*No especifico arquitectura ni ISA - todo conocimiento nuevo es bienvenido aquí, sea x86, ARM, MIPS o lo que toque en su momento.*
+
+* **[exercise-1-with-code](https://github.com/unlinkedbyte/Reversing/tree/main/binary-analysis/exercise-1-with-code)** - análisis de un binario del que conservaba el código fuente en mi memoria.
+* **[exercise-2-without-code](https://github.com/unlinkedbyte/Reversing/tree/main/binary-analysis/exercise-2-without-code)** - análisis de un binario a ciegas.
+
+
