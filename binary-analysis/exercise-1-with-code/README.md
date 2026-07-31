@@ -1,5 +1,6 @@
 ### Primeros pasos en reversing: destripando un binario del que sabemos el código fuente
 
+*Nota: este primer writeup tiene varios errores conceptuales, corregidos en el segundo ejercicio (el análisis a ciegas). Los dejo tal cual para comparar un análisis con otro y ver la mejora real, no solo el resultado final.*
 
 ### Estructura
 
