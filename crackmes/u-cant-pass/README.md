@@ -1,6 +1,6 @@
 ### Primer crackme documentado en el repositorio: "U Can't Pass" de mystergaif
 
-Buenas. Hoy vamos a hacer un writeup sobre el crackme mencionado en el título, de la plataforma crackmes.one . He hecho algunos otros entre ayer y hoy (beginner friendly) pero este me ha llamado la atención por un motivo que hoy vamos a poner en práctica: modificar los bytes con un editor hex. Esta idea no surge de la nada, curiosamente estaba hoy viendo un directo de gynvael coldwind sobre ingeniería inversa, y la diferencia de nivel es tan abismal que asusta. Pero él, en ese directo, justamente jugaba a nivel de bytes con el binario, y creo que lo podemos extrapolar a este (se puede solucionar sin, pero ya verás que está chulo). 
+Buenas. Hoy vamos a hacer un writeup sobre el crackme mencionado en el título, de la plataforma crackmes.one . He hecho algunos otros entre ayer y hoy (beginner friendly) pero este me ha llamado la atención por un motivo que hoy vamos a poner en práctica: modificar los bytes con un editor hex. Esta idea no surge de la nada, curiosamente estaba hoy viendo un directo de Gynvael Coldwind sobre ingeniería inversa, y la diferencia de nivel es tan abismal que asusta. Pero él, en ese directo, justamente jugaba a nivel de bytes con el binario, y creo que lo podemos extrapolar a este (se puede solucionar sin, pero ya verás que está chulo). 
 
 Aquí tienes la URL por si quisieras descargarlo: [U-Can't-Pass](https://crackmes.one/crackme/69cd36983e328e778db052c2)
 
