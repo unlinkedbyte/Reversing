@@ -1,6 +1,6 @@
 ### Primer crackme documentado en el repositorio: "U Can't Pass" de mystergaif
 
-Buenas. Hoy vamos a hacer un writeup sobre el crackme mencionado en el título, de la plataforma crackmes.one . He hecho algunos otros entre ayer y hoy (beginner friendly) pero este me ha llamado la atención por un motivo que hoy vamos a poner en práctica: modificar los bytes con un editor hex. Esta idea no surge de la nada, curiosamente estaba hoy viendo un directo de gynvael coldwin sobre ingenieria inversa, y la diferencia de nivel es tan abismal que asusta. Pero él, en ese directo, justamente jugaba a nivel de bytes con el binario, y creo que lo podemos extrapolar a este (se puede solucionar sin, pero ya verás que está chulo). 
+Buenas. Hoy vamos a hacer un writeup sobre el crackme mencionado en el título, de la plataforma crackmes.one . He hecho algunos otros entre ayer y hoy (beginner friendly) pero este me ha llamado la atención por un motivo que hoy vamos a poner en práctica: modificar los bytes con un editor hex. Esta idea no surge de la nada, curiosamente estaba hoy viendo un directo de gynvael coldwind sobre ingeniería inversa, y la diferencia de nivel es tan abismal que asusta. Pero él, en ese directo, justamente jugaba a nivel de bytes con el binario, y creo que lo podemos extrapolar a este (se puede solucionar sin, pero ya verás que está chulo). 
 
 Aquí tienes la URL por si quisieras descargarlo: [U-Can't-Pass](https://crackmes.one/crackme/69cd36983e328e778db052c2)
 
@@ -129,13 +129,13 @@ Encabezado ELF:
 
 ```
 
-Aquí vemos el, básicamente, el comando file pero más exhaustivo. Vemos los bytes mágicos de la cabecera ELF (los fijos llegan hasta el 46, los 3 siguientes son variables y nos dan información sobre el mismo, mientras que los demás que están a cero todavía no los he investigado. Los 3 que menciono variables, también los expliqué en el primer ejercicio de binary-analysis). Como vemos, nos confirma en gran parte lo visto con el comando `file`. Cabe destacar que, las otras dos flags de las cuales no pondré hoy el output, son importantes. Hoy, por el bien de la simplicidad al ser un binario pequeño, las vamos a omitir. Las flags son `-l` y `-S`, por si alguien quisiera investigarlas.
+Aquí, básicamente, vemos el comando file pero más exhaustivo. Vemos los bytes mágicos de la cabecera ELF (los fijos llegan hasta el 46, los 3 siguientes son variables y nos dan información sobre el mismo, mientras que los demás que están a cero todavía no los he investigado. Los 3 que menciono variables, también los expliqué en el primer ejercicio de binary-analysis). Esto nos confirma en gran parte lo visto con el comando `file`. Cabe destacar que las otras dos flags de las cuales no pondré hoy el output son importantes. Hoy, por el bien de la simplicidad al ser un binario pequeño, las vamos a omitir. Las flags son `-l` y `-S`, por si alguien quisiera investigarlas.
 
 Dicho esto, vamos a pasar al análisis estático después de mapear el terreno.
 
 ## Análisis estático
 
-Como acabo de decir, por el bien de la simplicidad, hoy no abriremos un descompilador, pasaremos al análisis estático con objdump para posteriormente ir a gdb. Este es el output con su comando: 
+Como acabo de decir (por el bien de la simplicidad), hoy no abriremos Ghidra, pasaremos al análisis estático con objdump para posteriormente ir a gdb. Este es el output con su comando: 
 
 ```bash
 objdump -d -M intel main.out
@@ -283,29 +283,29 @@ Desensamblado de la sección .fini:
 
 ```
 
-No te preocupes por toda la cantidad de información. Lo que vemos aquí cubre todas las secciones que contienen código ejecutable. A modo de introducción, veamos que se carga en cada una:
+No te preocupes por toda la cantidad de información. Lo que vemos aquí cubre todas las secciones que contienen código ejecutable. A modo de introducción, veamos qué se carga en cada una:
 
-    · `.init`: Es la sección que pertenece al código que se ejecuta muy al principio, antes de que main arranque (inicialización básicamente).
+    · .init: Es la sección que pertenece al código que se ejecuta muy al principio, antes de que main arranque (inicialización básicamente).
 
-    · `.plt/.plt.got/.plt.sec`: son los "saltos" hacia funciones de librerías dinámicas.
+    · .plt/.plt.got/.plt.sec: son los "saltos" hacia funciones de librerías dinámicas.
 
-    · `.text`: Aquí vive el código real, el main que escribió el autor, y el resto de la infraestructura generada por el compilador (ej: frame_dummy, register_tm_clones..).
+    · .text: Aquí vive el código real, el main que escribió el autor, y el resto de la infraestructura generada por el compilador (ej: frame_dummy, register_tm_clones..).
 
-    ·`.fini`: El código de cierre para cuando el programa termina, "simétrico" a .init .
+    ·.fini: El código de cierre para cuando el programa termina, "simétrico" a .init .
 
 Estas secciones que se cargan en memoria forman parte del segmento LOAD que podrás ver con readelf -l (una de ellas)
 
-*(Por cierto, un error que cometí en el primer writeup, que seguramente vuelva a comentar en el directorio dedicado al análisis de binarios, es que, si nos fijamos en donde empiezan las secciones en nuestro binario (por ejemplo, con `info file` en gdb), intentar leer información de .rodata (que es donde viven las cadenas de texto de nuestro código) como instrucción, te va a dar basura que gdb intenta interpretar. Error de novato jaja! Todavía hacen falta pulir muchas cosas).*
+*(Por cierto, un error que cometí en el primer writeup (que seguramente vuelva a comentar en el directorio dedicado al análisis de binarios) es que, si nos fijamos en donde empiezan las secciones en nuestro binario (por ejemplo, con `info file` en gdb), intentar leer información de .rodata (que es donde viven las cadenas de texto de nuestro código) como instrucción, te va a dar basura que gdb intenta interpretar. Error de novato jaja! Todavía hacen falta pulir muchas cosas).*
 
-Vamos ya a por el análisis dinámico, que hoy sí que quiero explicar unas cuántas cosas importantes.
+Vamos ya a por el análisis dinámico, que hoy sí que quiero explicar unas cuantas cosas importantes.
 
 ## Análisis dinámico
 
-Como en nuestros anteriores análisis por el momento, vamos a abrir GDB, desensamblar el main.
+Como en nuestros anteriores análisis por el momento, vamos a abrir GDB y desensamblar el main.
 
-Un matiz que quiero destacar para las posteriores explicaciones: Cuando veamos ahora (solo con el desensamblado) las direcciones de memoria virtuales a la izquierda, son offsets estáticos que vemos **antes** de ejecutar el programa, calculados como si el binario se cargara siempre en la dirección base 0x0. Pero como es PIE, el kernel le asigna una base aleatoria en cada ejecución. Lo comento porque no puedes poner un breakpoint si no esta corriendo sobre una dirección numérica literal contra un binario PIE, te pondrá que no puedes acceder a esa parte de la memoria, igual luego pongo un ejemplo práctico. Dicho esto, vamos a desensamblar el main para averiguar como funciona el binario por detras o cómo era el código fuente. 
+Un matiz que quiero destacar para las posteriores explicaciones: Cuando veamos ahora (solo con el desensamblado) las direcciones de memoria virtuales a la izquierda, son offsets estáticos que vemos **antes** de ejecutar el programa, calculados como si el binario se cargara siempre en la dirección base 0x0. Pero como es PIE, el kernel le asigna una base aleatoria en cada ejecución. Lo comento porque no puedes poner un breakpoint si no está corriendo sobre una dirección numérica literal contra un binario PIE, te pondrá que no puedes acceder a esa parte de la memoria, igual luego pongo un ejemplo práctico. Dicho esto, vamos a desensamblar el main para averiguar cómo funciona el binario por detrás o cómo era el código fuente. 
 
-Antes de nada, quiero mostraros un comando útil de gdb que nos indica donde estan las secciones:
+Antes de nada, quiero mostraros un comando útil de gdb que nos indica dónde están las secciones:
 
 ```text
 info file   // -> el comando al que me refería
@@ -375,13 +375,13 @@ End of assembler dump.
 
 Bueno, procedamos. Como esta es la primera vez que veo esa instrucción (endbr64), vamos a investigarla rápidamente:
 
-    · `endbr64`: Es una instrucción de seguridad relativamente reciente del procesador, parte de una tecnología Intel llamada CET (Control-flow Enforcement Technology). Su función es marcar explícitamente "este punto es un destino válido para un salto o llamada indirecta". Por qué existe y qué problema resuelve? Por la familia de ataques ROP/JOP (Return/Jump Oriented Programming), donde un atacante, aprovechando un bug de memoria, hace que la ejecución salte a mitad de una función existente en vez de por su flujo de entrada normal, encadenando fragmentos de código para construir un ataque completo sin inyectar código nuevo. Esta instrucción lo que hace es que, cuando la CPU ejecuta un salto o llamada indirecta (a través de un registro o puntero, no a una dirección fija escrita en el código), comprueba que el destino empiece exactamente con una instrucción endbr64. Si no la encuentra ahí, genera una excepción y el programa se detiene (porque eso indica que el salto está aterrizando en mitad de una función, no en su entrada).
+    · endbr64: Es una instrucción de seguridad relativamente reciente del procesador, parte de una tecnología Intel llamada CET (Control-flow Enforcement Technology). Su función es marcar explícitamente "este punto es un destino válido para un salto o llamada indirecta". Por qué existe y qué problema resuelve? Por la familia de ataques ROP/JOP (Return/Jump Oriented Programming), donde un atacante, aprovechando un bug de memoria, hace que la ejecución salte a mitad de una función existente en vez de por su flujo de entrada normal, encadenando fragmentos de código para construir un ataque completo sin inyectar código nuevo. Esta instrucción lo que hace es que, cuando la CPU ejecuta un salto o llamada indirecta (a través de un registro o puntero, no a una dirección fija escrita en el código), comprueba que el destino empiece exactamente con una instrucción endbr64. Si no la encuentra ahí, genera una excepción y el programa se detiene (porque eso indica que el salto está aterrizando en mitad de una función, no en su entrada).
 
 Dicho esto, y ahora sí, empecemos con el análisis. 
 
 Como siempre, el prólogo, que esta vez son 4 instrucciones. La siguiente de endbr64 es push rbp. Como ya sabemos, push rbp (esto es un base pointer) lo que hace es guardar el valor actual del registro. Guarda el frame pointer de la función que ha llamado (en este caso) al main. Lo guardamos porque vamos a reescribirlo creando otro anclaje en la siguiente instrucción, que nos permitirá movernos por la función con las direcciones relativas pertinentes. Al salir, se restaura con el último pop rbp que vemos en el final del desensamblado. 
 
-Creado el nuevo punto de anclaje del qué guiarse el programa, ahora (con sub) resta 0x10 a rsp. Por qué se hace esto? esta reservando la memoria que la propia función del main va a usar. Cuando hacemos la conversión, vemos que hemos reservado 16 bytes (0x10 = 16). Con esto, ha finalizado el prólogo y ya tenemos el stack frame creado. 
+Creado el nuevo punto de anclaje del que guiarse el programa, ahora (con sub) resta 0x10 a rsp. Por qué se hace esto? está reservando la memoria que la propia función del main va a usar. Cuando hacemos la conversión, vemos que hemos reservado 16 bytes (0x10 = 16). Con esto, ha finalizado el prólogo y ya tenemos el stack frame creado. 
 
 Para que sea más didáctico para el análisis, vamos a poner de 6 en 6 instrucciones:
 
@@ -412,15 +412,15 @@ Volviendo a las 6 instrucciones de arriba:
 
 La primera línea es el típico patrón que nos indica que se ha inicializado una variable a 0, llamémosla 'i'. Sabemos que es un int porque la operación mueve 4 bytes (dword -> double word = leer/escribir 4 bytes en esa dirección de memoria), que es exactamente lo que ocupa un int en un sistema de 64 bits. 
 
-Posteriormente se carga la dirección 0xe9a relativa al rip (instruction pointer) que es 0x2004, ya calculada por gdb, en rdi. `rdi` es un registro que habitualmente se usa para el primer argumento de una función (aunque, debo decir, que he descubierto que los registros son más flexibles de lo que me pensaba). Como vemos el printf sin estar optimizado por el compilador como puts, podríamos deducir que las cadenas que imprime tienen un especificador de formato que reciben un argumento, por ejemplo. Ahora bien, no parece ser este caso y no quiero asegurar si siempre es así, quizá tenga que ver también en la versión o qué compilador se ha usado. Dicho esto, hemos guardado en rdi esa dirección de memoria (que sabemos que contiene "Hello in my first program for crackme.one\n". 
+Posteriormente se carga la dirección 0xe9a relativa al rip (instruction pointer) que es 0x2004, ya calculada por gdb, en rdi. `rdi` es un registro que habitualmente se usa para el primer argumento de una función (aunque, debo decir, que he descubierto que los registros son más flexibles de lo que pensaba). Como vemos el printf sin estar optimizado por el compilador como puts, podríamos deducir que las cadenas que imprime tienen un especificador de formato que recibe un argumento, por ejemplo. Ahora bien, no parece ser este caso y no quiero asegurar si siempre es así, quizá tenga que ver también en la versión o qué compilador se ha usado. Dicho esto, hemos guardado en rdi esa dirección de memoria (que sabemos que contiene "Hello in my first program for crackme.one\n". 
 
 Por qué esta vez no parece ser que reciba un especificador de formato o argumento la función printf? porque cuando ejecutamos este binario, se cierra directamente con el tercer mensaje que vemos cuando hemos analizado lo de .rodata: "Error!", y termina directamente. 
 
 Dicho esto, luego, copiamos un 0x0 a al. Cuando vemos por ejemplo 'mov   eax, 0x0' antes de una función como printf, justamente nos indica que recibe un argumento, y que no es un flotante. Profundizaré más en esto en otros crackmes que traiga, que me estoy desviando. Para ser honesto, no tengo certeza si es aplicable ese patrón aquí, así que no quiero asegurar que el registro al lo vayamos a usar para esto. Lo dejo en el aire para otro momento. 
 
-Luego, estamos copiando 0xa a rbp-0x8. Aquí estamos desreferenciando, por lo que ahora, la dirección que apunta a rbp-0x8, contiene 10 (0xa es 10 en decimal). Posteriormente realizamos un compare con cmp, compara si rbp-0x8 contiene el valor 10, lo cual es así porque se lo acaba de pasar. Esto puede parecer una redundancia porque sabemos que se va a cumplir automáticamente, pero ese es el qué de este crackme. 
+Luego, estamos copiando 0xa a rbp-0x8. Aquí estamos desreferenciando, por lo que ahora la dirección que apunta a rbp-0x8 contiene 10 (0xa es 10 en decimal). Posteriormente realizamos un compare con cmp, compara si rbp-0x8 contiene el valor 10, lo cual es así porque se lo acaba de pasar. Esto puede parecer una redundancia porque sabemos que se va a cumplir automáticamente, pero ese es el qué de este crackme. 
 
-Ahora, la siguiente instrucción es je (jump if equal) a main + 62. Vamos a analizar el flujo del programa desde el main + 62 hasta el final para ver que pasa ya que esta condición es verdadera:
+Ahora, la siguiente instrucción es je (jump if equal) a main + 62. Vamos a analizar el flujo del programa desde el main + 62 hasta el final para ver qué pasa ya que esta condición es verdadera:
 
 ```text
    0x000000000000118e <+62>:	cmp    DWORD PTR [rbp-0x8],0xa
@@ -435,9 +435,9 @@ Ahora, la siguiente instrucción es je (jump if equal) a main + 62. Vamos a anal
    0x00000000000011ac <+92>:	ret
 ```
 
-En caso de ser igual (y lo es), nos lleva a otra comparación, donde vuelve a comprobar si rbp-0x8 contiene 10(0xa), lo que es correcto. Ahora, eso si, tenemos un jne (jump if not equal) a main + 82. Como sí que es igual, llegamos a la instrucción de lea, que, como sabemos, es una instrucción que copia la dirección de memoria de la fuente al destino. Como hemos puesto antes, 0x203a contiene "Error!". Es decir, este programa a simple vista parece que nos obliga a que nunca haya un success (como en el segundo lea visto anteriormente). Nos impone que siempre vaya al error, lo cual esto explica lo que sucede al ejecutarlo. Por cierto, rbp-0x8 simplemente es una variable de tipo int, llamémosla c, que inicializamos a 10 en main+33. Comento esto porque la estructura interna del código simplemente nos podría estar diciendo algo como "if (c == 10) {printf("Error"!) return 0;} else {printf("Success\n"); return 0;}". Luego, volvemos a ver el mismo patron de al, 0x0 del que no tengo certeza absoluta pero ocurre antes del printf (que imprime el error). 
+En caso de ser igual (y lo es), nos lleva a otra comparación, donde vuelve a comprobar si rbp-0x8 contiene 10(0xa), lo que es correcto. Ahora, eso sí, tenemos un jne (jump if not equal) a main + 82. Como sí que es igual, llegamos a la instrucción de lea, que, como sabemos, es una instrucción que copia la dirección de memoria de la fuente al destino. Como hemos puesto antes, 0x203a contiene "Error!". Es decir, este programa a simple vista parece que nos obliga a que nunca haya un success (como en el segundo lea visto anteriormente). Nos impone que siempre vaya al error, lo cual esto explica lo que sucede al ejecutarlo. Por cierto, rbp-0x8 simplemente es una variable de tipo int, llamémosla c, que inicializamos a 10 en main+33. Comento esto porque la estructura interna del código simplemente nos podría estar diciendo algo como "if (c == 10) {printf("Error!") return 0;} else {printf("Success\n"); return 0;}". Luego, volvemos a ver el mismo patrón de al, 0x0 del que no tengo certeza absoluta pero ocurre antes del printf (que imprime el error). 
 
-Después del printf, hay un salto incondicional, que debemos seguir. Aunque es en la siguiente línea jaja. Luego, copiamos el valor de rbp-0x4 a eax (que contenia 0, era la variable i = 0 del principio si recordamos). Los eax al final de la función suelen indicar ese return 0, así que cuadra. Para luego, añadir 0x10 a rsp (16, lo mismo que al principio), para luego sacar rbp del stack y retornar al primer push rbp para la función que nos llamó. Estas tres últimas instrucciones son el epílogo. 
+Después del printf, hay un salto incondicional que debemos seguir. Aunque es en la siguiente línea jaja. Luego, copiamos el valor de rbp-0x4 a eax (que contenía 0, era la variable i = 0 del principio si recordamos). Los eax al final de la función suelen indicar ese return 0, así que cuadra. Para luego, añadir 0x10 a rsp (16, lo mismo que al principio), para luego sacar rbp del stack y retornar al primer push rbp para la función que nos llamó. Estas tres últimas instrucciones son el epílogo. 
 
 Vamos a analizar las que nos faltan y entramos en cómo evadir o hacer que el binario haga lo que nosotros queremos, que es lo chulo de todo!
 
@@ -452,9 +452,9 @@ Nos faltaban estas instrucciones del medio:
    0x000000000000118c <+60>:	jmp    0x11a4 <main+84>
 ```
 
-Aquí esta el corazón del "Success!". Si en la segunda instrucción que no se ejecuta, podríamos llegar ahí, cargaría la dirección del string con lea a rdi para luego volver llamar a printf y hacer un salto incondicional a main+84, donde entraríamos en el epílogo. 
+Aquí está el corazón del "Success!". Si pudiéramos llegar a main+46, cargaría la dirección del string con lea a rdi para luego volver a llamar a printf y hacer un salto incondicional a main+84, donde entraríamos en el epílogo. 
 
-Bueno, en los dos ejercicios del binary-analysis planteaba la pregunta sobre la dificultad y la capacidad de abstracción, donde añadía lo complicado que podía llegar a ser imaginarte el código fuente sin tenerlo, pero es que en eso se basa la ingeniería inversa (entre otras tantas cosas, pero su "principal" finalidad). Dicho esto, creo que no ha ido tan mal el crackme (teniendo en cuenta todas las lagunas que hay y que llevamos 2 semanas a fondo, lo podemos considerar un logro, ya que hemos podido entender dónde esta el problema, aunque fuera sencillo). 
+Bueno, en los dos ejercicios del binary-analysis planteaba la pregunta sobre la dificultad y la capacidad de abstracción, donde añadía lo complicado que podía llegar a ser imaginarte el código fuente sin tenerlo, pero es que en eso se basa la ingeniería inversa (entre otras tantas cosas, pero su "principal" finalidad). Dicho esto, creo que no ha ido tan mal el crackme (teniendo en cuenta todas las lagunas que hay y que llevamos 2 semanas a fondo, lo podemos considerar un logro, ya que hemos podido entender dónde está el problema, aunque fuera sencillo). 
 
 
 ## Bypass: manipulación en caliente y posterior edición a nivel de bytes
@@ -462,6 +462,7 @@ Bueno, en los dos ejercicios del binary-analysis planteaba la pregunta sobre la 
 Empecemos por la evasión de la comprobación, dejando lo mejor (la edición con un editor hexadecimal) para el final. Aquí tenemos dos maneras. Empezaremos por la más sencilla y desglosaré la segunda.
 
 1. **La evasión sencilla**
+
 En este paso simplemente ponemos un breakpoint en main+44 (que es la instrucción anterior al je), corremos el programa con `run` y nos saltamos la instrucción para ir directamente a main+46, donde obtendremos lo que queremos y el programa saldrá exitosamente:
 
 ```text
@@ -560,7 +561,8 @@ Al no haber visto el Success, me había extrañado. Lo dejo aquí como pequeña 
 Lo que hacemos en la línea `set variable *(int *)($rbp-0x8) = 3` es desreferenciar(el * que está fuera de toda la operación) esa dirección tratándola como un puntero a un entero(int * ) , y le asignamos el nuevo valor.
 
 3. **Modificación de bytes con editor hexadecimal**
-Pasamos ahora a la modificación del byte con el editor hexadecimal. Este es el output del binario normal:
+
+Pasamos ahora a la modificación del byte con el editor hexadecimal. Este es el output del binario normal al ejecutarlo:
 
 ```bash
 /main.out 
@@ -579,7 +581,7 @@ $objdump -d -M intel main_patched.out | grep -C1 "1171:"
 
 Ya lo tengo confirmado por el propio análisis anterior, queremos cambiar el byte 0a, que es el 10. Los tres primeros bytes codifican la instrucción y su operando de destino ([rbp-0x8)]. 
 
-Teniendo la copia ya hecha del binario a modificar, vamos a abrirlo con un editor de texto con el comando `nvim -b <nombre_binario>`. Una vez hecho esto, nos apareceran muchos data ilegible. Estando dentro, ejecutamos `:%!xxd` para verlo en hexadecimal. Como xxd corta los bloques en 16 bytes, no caerá lo que buscamos justamente en 0x1171. No pasa nada, vamos a buscar un bloque que sea cercano para ver con cual trabajamos: 
+Teniendo la copia ya hecha del binario a modificar, vamos a abrirlo con un editor de texto con el comando `nvim -b <nombre_binario>`. Una vez hecho esto, nos aparecerá mucha data ilegible. Estando dentro, ejecutamos `:%!xxd` para verlo en hexadecimal. Como xxd corta los bloques en 16 bytes, no caerá lo que buscamos justamente en 0x1171. No pasa nada, vamos a buscar un bloque que sea cercano para ver con cuál trabajamos: 
 
 ```text
 00001160: 0000 0048 8d3d 9a0e 0000 b000 e8df feff  ...H.=..........                                   
@@ -587,9 +589,9 @@ Teniendo la copia ya hecha del binario a modificar, vamos a abrirlo con un edito
 00001180: 3dab 0e00 00b0 00e8 c4fe ffff eb16 837d  =..............}    
 ```
 
-Como podemos apreciar, el ff del principio corresponde a una instrucción anterior. Si comparamos el output de arriba, identificamos donde empieza y termina: `c7 45f8 0a00 0000`. Teniendo esto identificado correctamente, cambiamos el byte correspondiente al primer 0a de esa secuencia (a 03 por ejemplo) y debemos usar, despues de haberlo modificado, este comando: `:%!xxd -r` para luego guardar el archivo, con `:wq` (en mi caso, que ha sido en nvim).
+Como podemos apreciar, el ff del principio corresponde a una instrucción anterior. Si comparamos el output de arriba, identificamos dónde empieza y termina: `c7 45f8 0a00 0000`. Teniendo esto identificado correctamente, cambiamos el byte correspondiente al primer 0a de esa secuencia (a 03 por ejemplo) y debemos usar, después de haberlo modificado, este comando: `:%!xxd -r` para luego guardar el archivo, con `:wq` (en mi caso, que ha sido en nvim).
 
-Teniendolo ya editado, ahora, si ejecutamos el binario modificado, mirad el resultado:
+Teniéndolo ya editado, ahora, si ejecutamos el binario modificado, mirad el resultado:
 
 ```bash
 ./main_patched.out 
