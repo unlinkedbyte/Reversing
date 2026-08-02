@@ -1,11 +1,11 @@
-### Primer crackme documentado en el repositorio: "U Can't Pass" de mystergaif
+## Primer crackme documentado en el repositorio: "U Can't Pass" de mystergaif
 
 Buenas. Hoy vamos a hacer un writeup sobre el crackme mencionado en el título, de la plataforma crackmes.one . He hecho algunos otros entre ayer y hoy (beginner friendly) pero este me ha llamado la atención por un motivo que hoy vamos a poner en práctica: modificar los bytes con un editor hex. Esta idea no surge de la nada, curiosamente estaba hoy viendo un directo de Gynvael Coldwind sobre ingeniería inversa, y la diferencia de nivel es tan abismal que asusta. Pero él, en ese directo, justamente jugaba a nivel de bytes con el binario, y creo que lo podemos extrapolar a este (se puede solucionar sin, pero ya verás que está chulo). 
 
 Aquí tienes la URL por si quisieras descargarlo: [U-Can't-Pass](https://crackmes.one/crackme/69cd36983e328e778db052c2)
 
 
-## Estructura
+### Estructura
 
 Empezamos, como siempre, con el pre-análisis del binario, para ver qué información obtenemos.
 
@@ -133,7 +133,7 @@ Aquí, básicamente, vemos el comando file pero más exhaustivo. Vemos los bytes
 
 Dicho esto, vamos a pasar al análisis estático después de mapear el terreno.
 
-## Análisis estático
+### Análisis estático
 
 Como acabo de decir (por el bien de la simplicidad), hoy no abriremos Ghidra, pasaremos al análisis estático con objdump para posteriormente ir a gdb. Este es el output con su comando: 
 
@@ -299,7 +299,7 @@ Estas secciones que se cargan en memoria forman parte del segmento LOAD que podr
 
 Vamos ya a por el análisis dinámico, que hoy sí que quiero explicar unas cuantas cosas importantes.
 
-## Análisis dinámico
+### Análisis dinámico
 
 Como en nuestros anteriores análisis por el momento, vamos a abrir GDB y desensamblar el main.
 
@@ -457,7 +457,7 @@ Aquí está el corazón del "Success!". Si pudiéramos llegar a main+46, cargar�
 Bueno, en los dos ejercicios del binary-analysis planteaba la pregunta sobre la dificultad y la capacidad de abstracción, donde añadía lo complicado que podía llegar a ser imaginarte el código fuente sin tenerlo, pero es que en eso se basa la ingeniería inversa (entre otras tantas cosas, pero su "principal" finalidad). Dicho esto, creo que no ha ido tan mal el crackme (teniendo en cuenta todas las lagunas que hay y que llevamos 2 semanas a fondo, lo podemos considerar un logro, ya que hemos podido entender dónde está el problema, aunque fuera sencillo). 
 
 
-## Bypass: manipulación en caliente y posterior edición a nivel de bytes
+### Bypass: manipulación en caliente y posterior edición a nivel de bytes
 
 Empecemos por la evasión de la comprobación, dejando lo mejor (la edición con un editor hexadecimal) para el final. Aquí tenemos dos maneras. Empezaremos por la más sencilla y desglosaré la segunda.
 
