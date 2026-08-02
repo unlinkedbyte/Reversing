@@ -1,4 +1,4 @@
-### Un análisis con un nuevo enfoque
+## Un análisis con un nuevo enfoque
 
 Después de una semana de mucho trabajo, ayer decidí desconectar del todo. Al llegar la noche, me apetecía hacer algo, así que me puse a resolver crackmes para entrenar el reconocimiento de patrones (sin buscar un análisis exhaustivo, porque tampoco era la hora ni el estado mental para eso). Este writeup surge de justamente eso: al ser ya ciertas horas y ver que mi cerebro no estaba para análisis kilométricos ni conocimiento en profundidad, decidí enfocarlo en la optimización; simplemente resolver estos pequeños puzzles para saltar al siguiente.
 
@@ -9,7 +9,7 @@ Dicho esto (aunque me repita), hoy no veremos las mismas estructuras que vimos y
 Este es el crackme a analizar, se llama "access me please" de chaltu: [Access me please](https://crackmes.one/crackme/6a3a7734a4b247348ae80666).
 
 
-## Estructura
+### Estructura
 
 Después de identificar ciertas propiedades del binario con el comando `file`, este es el output que vemos con el comando strings:
 
@@ -119,7 +119,7 @@ Dicho esto, si quisiéramos, podríamos usar el comando `readelf` con las flags 
 
 Pasemos al análisis estático, aunque sea por encima.
 
-## Análisis estático
+### Análisis estático
 
 Para este tipo de binarios no usaremos Ghidra todavía. No es por pereza ni vagancia, el simple hecho de usar Ghidra aunque sea para un binario tan pequeño nos permitiría familiarizarnos más con la interfaz. Pero no la uso en los writeups que hay hasta el momento por el simple hecho de que Ghidra se puede usar para que te lo dé todo mascado, no queremos eso. El uso que le daré será para binarios grandes donde su ayuda nos vendrá genial y permitirá optimizar muchísima faena y abstracción.
 
@@ -309,7 +309,7 @@ Desensamblado de la sección .fini:
 
 Ya podemos confirmar con certeza que eran dos funciones (canaccess y printaccess) vistas anteriormente con el comando strings. Recordemos que es little-endian (no lo he mostrado pero se puede confirmar con el comando file y con el comando readelf -h), para que no nos despiste lo que haremos posteriormente.
 
-## Análisis dinámico
+### Análisis dinámico
 
 En este caso, aunque ya vemos toda la información relevante con el análisis estático, vamos a abrir GDB como hacemos normalmente:
 
@@ -509,11 +509,11 @@ Access Denied!!!!
 ```
 
 
-### Segundo binario: invirtiendo un salto en vez de un valor
+## Segundo binario: invirtiendo un salto en vez de un valor
 
 Este es el binario "level2" de nimacpp, aquí te lo dejo: [level2](https://crackmes.one/crackme/65da0fce6d3d2b1fef4be4df). Vamos a trabajar sobre este ahora. 
 
-## Estructura
+### Estructura
 
 Otra vez, y creo que es importante remarcarlo aunque no vaya a poner ciertos outputs por optimización y velocidad, hay que usar los comandos y metodología pertinente, para interiorizarla y aprender. 
 
@@ -613,7 +613,7 @@ Lo que había comentado en otros writeups, aunque pueda depender del compilador,
 
 Dicho esto, pasemos ahora al análisis estático (ni falta que hace decir que primero comprobemos todo con el comando readelf antes de nada).
 
-## Análisis estático
+### Análisis estático
 
 Me gustaría decir que he analizado previamente el volcado con objdump para poder verificaros que solo existe el main en el código fuente, pero para que sea riguroso, voy a ponerlo todo para que lo podáis verificar también. Disculpad el exceso:
 
@@ -782,7 +782,7 @@ Desensamblado de la sección .fini:
 
 Dicho esto, pasemos al análisis dinámico.
 
-## Análisis dinámico
+### Análisis dinámico
 
 Aquí tenemos la información sobre qué parte del binario pertenece a qué sección:
 
