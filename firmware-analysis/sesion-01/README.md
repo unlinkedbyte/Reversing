@@ -1,6 +1,10 @@
 ### Primer análisis de firmware: TP-Link TL-WR841N V10 (firmware de 2015)
 
-Este será la primera parte de un análisis sobre el firmware de un router de 2015. Ya que hay muchas cosas que tocamos por primera vez, trataré de dejarlas explicadas con exhaustividad para cuando vuelva a leerme este análisis y para mí mismo cuando lo vuelva a leer en un futuro. Hay muchas cosas que es la primera vez que veía, ¡así que disculpas si hay errores conceptuales! 
+*Buena parte de la metodología y de la interpretación de las estructuras la construí con ayuda de un LLM y de fuentes externas; lo documento aquí como guía de referencia para mí mismo más que como trabajo propio. Las sesiones siguientes serán autónomas (o los firmware siguientes)*
+
+
+
+Este será la primera parte de un análisis sobre el firmware de un router de 2015. Ya que hay muchas cosas que tocamos por primera vez, trataré de dejarlas explicadas con exhaustividad para cuando vuelva a leerme este análisis.
 
 **Modelo:** TP-Link TL-WR841N, versión de hardware V10
 
