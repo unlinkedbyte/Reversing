@@ -519,4 +519,7 @@ Breakpoint 1, 0x00005555555550c0 in ?? ()
 (gdb) 
 ```
 
-Y ahora, ya podemos ir a resolver el crackme por nuestra cuenta. 
+Y ahora, ya podemos ir a resolver el crackme por nuestra cuenta.
+
+
+**En un próximo writeup quiero cubrir un caso distinto: un crackme donde lo que decía el desensamblado no encajaba con lo que el programa acababa pidiendo. Aquí el problema era que faltaba información; allí, que la información engañaba.**
