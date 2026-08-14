@@ -548,7 +548,7 @@ Empezamos con el prólogo de las funciones. Aquí es donde se prepara el punto d
    0x000000000000117a <+4>:	sub    rsp,0x10
 ```
 
-push rbp esta creando el punto de anclaje para la anterior función, para, cuando terminemos esta, sepa a dónde regresar. mov es una instrucción que sirve para copiar el valor de la fuente al destino. Esto es, en sintaxis de intel, como funcionan las intrucciones:
+push rbp esta creando el punto de anclaje para la anterior función, para, cuando terminemos esta, sepa a dónde regresar. (**Corrección:** push rbp guarda el frame pointer de la función que nos llamó, para poder restaurarlo al salir. No tiene que ver con el saber a dónde regresar, la dirección de retorno la apila la instrucción call y ret la recupera) mov es una instrucción que sirve para copiar el valor de la fuente al destino. Esto es, en sintaxis de intel, como funcionan las intrucciones:
 
 ```text
 dirección de memoria <bytes al main>        operación   destino, fuente
