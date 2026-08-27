@@ -8,7 +8,7 @@ Como este no va a ser un writeup explicando el formato ELF (aunque quizá sí ex
 
 Este crackme tenía ganas de subirlo porque ocurre algo que, cuando lo vi, no sabía que fuera posible: el desensamblado nos dice una cosa pero luego ocurre otra. Luego veremos cómo llegamos ahí. Por el momento, este es el crackme por si alguien quisiera hacérselo: [argc de toasterbirb](https://crackmes.one/crackme/68698837aadb6eeafb399017).
 
-*(Nota: al final ha habido más tecnicismos de los que quisiera. Si no te apetece leerlo todo, puedes ir simplemente al título donde pone "Por qué main nos miente..." o quizá un poco antes donde puedas ver el análisis del desensamblado para que sepas cómo llego a esa pregunta)
+*(Nota: al final ha habido más tecnicismos de los que quisiera. Si no te apetece leerlo todo, puedes ir simplemente al título donde pone "Por qué main nos miente..." o quizá un poco antes donde puedas ver el análisis del desensamblado para que sepas cómo llego a esa pregunta)*
 
 ### Estructura
 
