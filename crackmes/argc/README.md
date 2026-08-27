@@ -589,4 +589,50 @@ Esas 3 instrucciones suman 4 bytes, el reemplazo del endbr64 que ocupa 4.
 
 Por cierto, en los binarios que yo he mostrado propios no estaban compilados con la flag que activa la protección contra ROP y JOP (el endbr64), pero en este sí. Así que un binario compilado con esa protección, o todas las funciones susceptibles de ser destino indirecto llevan esa instrucción o no la lleva ninguna. Un binario donde `main` la tiene y `_start` no es una inconsistencia apreciable. 
 
+### Sección añadida: lo parcheamos de vuelta
 
+Después de haberlo subido y haberlo vuelto a leer, no me acababa de convencer el final. Así que me he preguntado: ¿Y si lo parcheo de vuelta para comprobar si las afirmaciones hechas son ciertas?
+
+Primero de todo creamos una copia del binario para no modificar el que original, por si algo sale mal: 
+```bash
+$cp argc ./argc_patched
+
+$ls -l
+.rw-rw-r-- ygm ygm 3.6 KB Thu Aug  6 22:59:50 2026  68698837aadb6eeafb399017.zip
+.rwx------ ygm ygm  18 KB Sat Jul  5 22:16:55 2025  argc
+.rwx------ ygm ygm  18 KB Thu Aug 27 20:46:22 2026  argc_patched
+```
+
+Primero de todo abrimos el binario con el comando `nvim -b argc_patched` para abrirlo con nvim en modo binario. Y, estando dentro, usamos este comando para ver los datos ilegibles en hex: `:%!xxd`.
+
+Luego filtramos por el entry point que teníamos para averiguar donde está `_start`. Una vez encontrado, podemos ver esta línea:
+
+```text
+000010e0: 58d0 e850 31ed 4989 d15e 4889 e248 83e4  X..P1.I..^H..H.. 
+```
+
+Empieza directamente al principio, así que no tenemos que buscar demasiado. Genial. Ahora lo que debemos hacer es cambiar esos 4 primeros bytes por la instrucción endbr64, que la he dejado arriba. Ahora, la misma secuencia debe quedarnos así:
+
+```text
+000010e0: f30f 1efa 31ed 4989 d15e 4889 e248 83e4  X..P1.I..^H..H..
+```
+
+Ahora guardamos los cambios así, primero guardando los cambios que hemos hecho con xxd: `:%!xxd -r` y luego saliendo normal con `:wq`.
+
+Una vez fuera, vamos a comprobar el resultado con varias opciones:
+
+```bash
+./argc_patched test test
+correct! (˶ᵔ ᵕ ᵔ˶)
+
+./argc_patched test test test test test
+please try again and make sure to give the correct amount of arguments („ᵕᴗᵕ„)
+
+./argc_patched test test test test test test
+please try again and make sure to give the correct amount of arguments („ᵕᴗᵕ„)
+
+./argc_patched test test test 
+please try again and make sure to give the correct amount of arguments („ᵕᴗᵕ„)
+```
+
+¡Y aquí lo tenemos! Da gusto cuando las cosas salen bien, aunque este binario fuera beginner friendly también. Bueno, un writeup pendiente menos, espero que hayas podido aprender mucho.
