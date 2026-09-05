@@ -16,6 +16,17 @@ Este será la primera parte de un análisis sobre el firmware de un router de 20
 
 Aunque tiene una estructura parecida, en este aspecto haremos más uso de Ghidra y de binwalk. `objdump` no entendía la ISA de MIPS, y es buena idea hacer un pequeño resumen ya sobre Ghidra, para el que la coja por primera vez. 
 
+**Nota de corrección:** En la versión original escribí que "objdump no entendía la ISA de MIPS" y no es correcto del todo. Sí que la soporta, lo que pasa es que objdump que trae la distro viene compilado solo con el target del host, así que hay que instalar binutils-multiarch o binutils-mips-linux-gnu (que te da mips-linux-gnu-objdump). En mi caso aparecía esto, así que es la primera deducción que puse. Culpa mía por haber investigado poco:
+
+```bash
+objdump -d binario 
+
+binario:     formato del fichero elf32-big
+
+objdump: no se puede desensamblar para la arquitectura UNKNOWN!
+```
+
+**En los próximos writeups vendrán explicaciones mejores y temas pendientes a tratar, igual que ciertas correcciones que me estoy encontrando por el camino**
 
 Esta sería la estructura que debemos seguir: 
 
