@@ -1,6 +1,6 @@
 ### Crackmes
 
-Writeups de crackmes resueltos!
+Writeups de crackmes resueltos.
 
 *No subo los binarios originales, cada writeup enlaza a la página correspondiente donde se pueda descargar.*
 
